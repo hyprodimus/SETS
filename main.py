@@ -1,49 +1,15 @@
-# from textwrap import fill
-# from asyncio import subprocess
-import argparse
-import copy
-import ctypes
-import datetime
-import html
-import json
 import os
-import pickle
-import platform
-import re
 import sys
-import textwrap
-import tkinter as tk
-import urllib.parse
-import uuid
-import webbrowser
-# from tkinter import *
-from tkinter import BOTH, BOTTOM, DISABLED, END, FLAT, HORIZONTAL
-from tkinter import Canvas, Checkbutton, Entry, Frame, Label, Menu, Menubutton  # , Message
-from tkinter import DoubleVar, IntVar, StringVar
-from tkinter import LEFT, NORMAL, RIGHT, TOP, VERTICAL, WORD, X, Y
-from tkinter import OptionMenu, PhotoImage, Radiobutton, Scale, Scrollbar, Text, Toplevel
-from tkinter import Tk
-from tkinter import filedialog
-from tkinter import font
-from tkinter import messagebox
-from tkinter.ttk import Progressbar, Combobox
 
-import PIL
-import numpy as np
-import requests
-from PIL import Image, ImageTk, ImageGrab
-from requests_html import Element, HTMLSession, HTML
-
-#import xlsxwriter
+from src import SETS
 
 
-if platform.system() == 'Darwin':
-    from tkmacosx import Button
-else:
-    from tkinter import Button
+class Launcher():
 
-CLEANR = re.compile('<.*?>')
+    version = '2026.01b110'
+    __version__ = '2.2'
 
+<<<<<<< HEAD
 """This section will improve display, but may require sizing adjustments to activate"""
 if sys.platform.startswith('win'):
     try:
@@ -234,184 +200,554 @@ class SETS():
     # Needs fonts, padx, pady, possibly others
     theme = theme_default = {
         'name': 'SETS_default',
+=======
+    # holds the style of the app
+    theme = {
+        # general style
+>>>>>>> upstream/main
         'app': {
-            'bg': '#c59129',  # self.theme['app']['bg']
-            'fg': '#3a3a3a',  # self.theme['app']['fg']
-            'hover': '#a3a3a3',  # self.theme['app']['hover']
-            'font': {  # self.theme['app']['font_object']
-                'family': 'Helvetica',
-                'size': 10,
-                'weight': '',
-            },
+            'bg': '#1a1a1a',
+            'fg': '#eeeeee',
+            'sets': '#c59129',
+            'font': ('Overpass', 11, 'normal'),
+            'heading': ('Overpass', 14, 'bold'),
+            'subhead': ('Overpass', 12, 'medium'),
+            'font-fallback': ('Yu Gothic UI', 'Nirmala UI', 'Microsoft YaHei UI', 'sans-serif'),
+            'frame_thickness': 8,
+            # this styles every item of the given type
+            'style': {
+                # scroll bar trough (invisible)
+                'QScrollBar': {
+                    'background': 'none',
+                    'border-style': 'none',
+                    'border-radius': 0,
+                    'margin': 0
+                },
+                'QScrollBar:vertical': {
+                    'width': 8,
+                },
+                'QScrollBar:horizontal': {
+                    'height': 8,
+                },
+                # space above and below the scrollbar handle
+                'QScrollBar::add-page, QScrollBar::sub-page': {
+                    'background': 'none'
+                },
+                # scroll bar handle
+                'QScrollBar::handle': {
+                    'background-color': 'rgba(100,100,100,.75)',
+                    'border-radius': 4,
+                    'border': 'none'
+                },
+                # scroll bar arrow buttons
+                'QScrollBar::add-line, QScrollBar::sub-line': {
+                    'height': 0  # hiding the arrow buttons
+                }
+            }
         },
+        # shortcuts, @bg -> means bg in this sub-dictionary
+        'defaults': {
+            'bg': '#1a1a1a',  # background
+            'mbg': '#242424',  # medium background
+            'lbg': '#404040',  # light background
+            'sets': '#c59129',  # accent
+            'lsets': '#60c59129',  # light accent
+            'font': ('Overpass', 11, 'normal'),
+            'heading': ('Overpass', 14, 'bold'),
+            'subhead': ('Overpass', 12, 'medium'),
+            'small_text': ('Overpass', 10, 'normal'),
+            'fg': '#eeeeee',  # foreground (usually text)
+            'mfg': '#bbbbbb',  # medium foreground
+            'bc': '#888888',  # border color
+            'bw': 1,  # border width
+            'br': 2,  # border radius
+            'sep': 2,  # seperator -> width of major seperating lines
+            'margin': 10,  # default margin between widgets
+            'csp': 5,  # child spacing -> content margin
+            'isp': 15,  # item spacing
+        },
+        # dark frame
         'frame': {
-            'bg': '#3a3a3a',  # self.theme['frame']['bg']
-            'fg': '#b3b3b3',  # self.theme['frame']['fg']
+            'background-color': '@bg',
+            'border-style': 'none',
+            'margin': 0,
+            'padding': 0
         },
-        'frame_medium': {
-            'bg': '#b3b3b3',  # self.theme['frame_medium']['bg']
-            'fg': '#3a3a3a',  # self.theme['frame_medium']['fg']
-            'hover': '#555555',  # self.theme['frame_medium']['hover']
-            'hlbg': 'grey',  # self.theme['frame_medium']['hlbg']  # highlightbackground
-            'hlthick': 1,  # self.theme['frame_medium']['hlthick']  # highlightthickness
+        # medium frame
+        'medium_frame': {
+            'background-color': '@mbg',
+            'margin': 0,
+            'padding': 0
         },
-        'frame_light': {
-            'bg': '#b3b3b3',  # self.theme['frame_light']['bg']
-            'fg': '#3a3a3a',  # self.theme['frame_light']['fg']
+        # light frame
+        'light_frame': {
+            'background': '@lbg',
+            'margin': 0,
+            'padding': 0
         },
-        'button_heavy': {
-            'bg': '#6b6b6b',  # self.theme['button_heavy']['bg']
-            'fg': '#ffffff',  # self.theme['button_heavy']['fg']
-            'hover': '#bbbbbb',  # self.theme['button_heavy']['hover']
-            'font': {  # self.theme['button_heavy']['font_object']
-                'size': 12,
-                'weight': 'bold',
-            },
-        },
-        'button_medium': {
-            'bg': '#6b6b6b',  # self.theme['button_medium']['bg']
-            'fg': '#dddddd',  # self.theme['button_medium']['fg']
-            'hover': '#bbbbbb',  # self.theme['button_medium']['hover']
-            'font': {  # self.theme['button_medium']['font_object']
-            },
-        },
-        'button': {
-            'bg': '#3a3a3a',  # self.theme['button']['bg']
-            'fg': '#b3b3b3',  # self.theme['button']['fg']
-            'activebackground': '#555555',    # self.theme['button']['activebackground']
-        },
+        # default text (non-button, non-entry, non table)
         'label': {
-            'bg': '#b3b3b3',  # self.theme['label']['bg']
-            'fg': '#3a3a3a',  # self.theme['label']['fg']
-            'font': {  # self.theme['app']['font_object']
-                'size': 12,
+            'color': '@fg',
+            'margin': (3, 0, 3, 0),
+            'qproperty-indent': '0',  # disables auto-indent
+            'border-style': 'none',
+            'font': '@font'
+        },
+        # default text (non-button, non-entry, non table)
+        'hint_label': {
+            'color': '@mfg',
+            'margin': (3, 0, 3, 0),
+            'qproperty-indent': '0',  # disables auto-indent
+            'border-style': 'none',
+            'font': '@font'
+        },
+        # heading label
+        'label_heading': {
+            'color': '@fg',
+            'qproperty-indent': '0',
+            'border-style': 'none',
+            'font': '@heading'
+        },
+        # label for subheading
+        'label_subhead': {
+            'color': '@fg',
+            'qproperty-indent': '0',
+            'border-style': 'none',
+            'margin-bottom': 3,
+            'font': '@subhead'
+        },
+        # default button
+        'button': {
+            'background-color': 'none',
+            'color': '@fg',
+            'text-decoration': 'none',
+            'border-width': '@bw',
+            'border-style': 'solid',
+            'border-color': '@sets',
+            'margin': (3, 3, 3, 3),
+            'padding': (2, 5, 0, 5),
+            'font': ('Overpass', 13, 'medium'),
+            ':hover': {
+                'border-color': '@bc'
+            },
+            ':disabled': {
+                'color': '@bc'
+            },
+            # Tooltip
+            '~QToolTip': {
+                'background-color': '@mbg',
+                'border-style': 'solid',
+                'border-color': '@lbg',
+                'border-width': '@bw',
+                'padding': (0, 0, 0, 0),
+                'color': '@fg',
+                'font': 'Overpass'
+            }
+        },
+        # heavy button
+        'heavy_button': {
+            'background-color': '@sets',
+            'color': '@fg',
+            'text-decoration': 'none',
+            'border-width': '@bw',
+            'border-style': 'solid',
+            'border-color': '@sets',
+            'margin': (3, 3, 3, 3),
+            'padding': (2, 5, 0, 5),
+            'font': ('Overpass', 13, 'bold'),
+            ':hover': {
+                'background-color': '@mbg'
+            },
+            ':disabled': {
+                'color': '@bc'
+            }
+        },
+        # build item button
+        'item': {
+            'background-color': '#242424',
+            'border-width': 1,
+            'border-color': '#888888',
+            'border-highlight-color': '#ffd700'
+        },
+        # build item button
+        'item_dark': {
+            'background-color': '#1a1a1a',
+            'border-width': 1,
+            'border-color': '#404040',
+        },
+        # checkbox
+        'checkbox': {
+            '::indicator': {
+                'width': 16,
+                'height': 16,
+                'border-style': 'solid',
+                'border-width': '@bw',
+                'border-color': '@bc',
+                'background-color': '@lbg',
+            },
+            '::indicator:hover': {
+                'border-color': '@sets'
+            },
+            '::indicator:checked': {
+                'image': 'url(local/check.svg)'
+            },
+            '::indicator:unchecked': {
+                'image': 'url(local/uncheck.svg)',
+            }
+        },
+        # holds sub-pages
+        'tabber': {
+            'background-color': 'none',
+            'border': 'none',
+            'margin': 0,
+            'padding': 0,
+            '::pane': {
+                'border': 'none',
+            }
+        },
+        # default tabber buttons (hidden)
+        'tabber_tab': {
+            '::tab': {
+                'height': 0,
+                'width': 0
+            }
+        },
+        # combo box
+        'combobox': {
+            'border-style': 'solid',
+            'border-width': '@bw',
+            'border-color': '@bc',
+            'background-color': '@bg',
+            'padding': (1, 5, 1, 5),
+            'color': '@fg',
+            'font': '@subhead',
+            '::down-arrow': {
+                'image': 'url(local/thick-chevron-down.svg)',
+                'width': '@margin',
+            },
+            '::drop-down': {
+                'border-style': 'none',
+                'padding': (2, 2, 2, 2)
+            },
+            '~QAbstractItemView': {
+                'background-color': '@mbg',
+                'border-style': 'solid',
+                'border-color': '@bc',
+                'border-width': '@bw',
+                'border-radius': '@br',
+                'color': '@fg',
+                'outline': '0',
+                '::item': {
+                    'border-width': '@bw',
+                    'border-style': 'solid',
+                    'border-color': '@mbg',
+                },
+                '::item:hover': {
+                    'border-color': '@sets',
+                },
+            }
+        },
+        # additional style for doff combobox
+        'doff_combo': {
+            'color': '@fg',
+            'border-style': 'none',
+            'border-width': 0,
+            'margin': 0,
+            'font': '@small_text'
+        },
+        # additional style for boff combobox
+        'boff_combo': {
+            'font': '@font',
+            ':disabled': {
+                'border-color': '@bg',
+                'border-left-width': 0,
+                'padding-left': 0
+            },
+            '::down-arrow:disabled': {
+                'image': 'none',
+                'width': '@margin',
             },
         },
-        'space': {
-            'bg': '#000000',  # self.theme['label']['bg']
-            'fg': '#3a3a3a',  # self.theme['label']['fg']
-        },
-        'title1': {
-            'font': {  # self.theme['title1']['font_object']
-                'size': 14,
-                'weight': 'bold',
+        # auto-completion popup of combobox
+        'popup': {
+            'background-color': '@mbg',
+            'border-style': 'solid',
+            'border-color': '@bc',
+            'border-width': '@bw',
+            'border-radius': '@br',
+            'color': '@fg',
+            'outline': '0',
+            '::item': {
+                'border-width': '@bw',
+                'border-style': 'solid',
+                'border-color': '@mbg',
+            },
+            '::item:hover': {
+                'border-color': '@sets',
             },
         },
-        'title2': {
-            'font': {  # self.theme['title2']['font_object']
-                'size': 12,
-                'weight': 'bold',
+        # line of user-editable text
+        'entry': {
+            'background-color': '@mbg',
+            'color': '@fg',
+            'border-width': '@bw',
+            'border-style': 'solid',
+            'border-color': '@bc',
+            'font': '@subhead',
+            'selection-background-color': '@lsets',
+            # cursor is inside the line
+            ':focus': {
+                'border-color': '@sets'
+            },
+            ':hover': {
+                'background-color': '@lbg'
+            }
+        },
+        # for item tooltips
+        'infobox': {
+            'background-color': '#000000',
+            'border-style': 'none',
+            'color': '@fg',
+            # 'margin': 0,
+            # 'padding': 0,
+        },
+        'infobox_frame': {
+            'background-color': '#000000',
+            'border-style': 'solid',
+            'border-width': '@bw',
+            'border-color': '@mbg',
+            'border-radius': '@br',
+            # 'margin': 0,
+            # 'padding': '@sep',
+        },
+        # tooltip for TooltipLabel
+        'label_tooltip': {
+            'color': '@fg',
+            'background-color': '@bg',
+            'border-color': '@lbg',
+            'border-radius': '@br',
+            'border-style': 'solid',
+            'border-width': '@bw',
+            'font': '@font',
+            'padding': 2,
+            'qproperty-indent': '0',  # disables auto-indent
+        },
+        # for formatting tooltip text, will contain css from tooltip_def
+        'tooltip': {},
+        'tooltip_def': {
+            'indent': {
+                'margin': (0, 0, 0, 20),
+            },
+            'ul': {
+                'margin': (0, 0, 0, 20),
+                '-qt-list-indent': '0',
+            },
+            'li': {
+                'margin-bottom': 1,
+            },
+            'boff_header': {
+                'color': '#42afca',
+                'font-size': 'large',
+                'font-weight': 'bold',
+            },
+            'trait_header': {
+                'color': '#42afca',
+                'font-size': 'large',
+                'font-weight': 'bold',
+                'margin': 0,  # padding: 0
+            },
+            'trait_subheader': {
+                'color': '#42afca',
+                'font-size': 10,
+                'margin': (0, 0, 20, 0),
+            },
+            'equipment_name': {
+                'font-size': 'large',
+                'font-weight': 'bold',
+                'margin': 0
+            },
+            'equipment_type_subheader': {
+                'font-size': 10,
+                'margin': (0, 0, 20, 0),
+            },
+            'equipment_head': {
+                'color': '#42afca',
+                'font-size': 12,
+                'margin': (10, 0, 0, 0)
+            },
+            'equipment_subhead': {
+                'color': '#f4f400',
+                'font-size': 10,
+                'margin': 0
+            },
+            'equipment_who': {
+                'color': '#ff6347',
+                'font-size': 10,
+                'margin': (0, 0, 10, 0)
+            },
+            'skill_ultimate_name': {
+                'color': '#ffd700;',
+                'font-size': 12,
+                'margin': (10, 0, 0, 0)
             },
         },
-        'text_highlight': {
-            'font': {  # self.theme['text_highlight']['font_object']
-                'size': 10,
-                'weight': 'bold',
+        # picker window
+        'picker': {
+            'background-color': '@bg',
+            'border-color': '@sets',
+            'border-width': 3,
+            'border-style': 'solid',
+            'border-radius': '@br'
+        },
+        # list widget displaying items in picker
+        'picker_list': {
+            'background-color': '@bg',
+            'color': '@fg',
+            'border-style': 'none',
+            'margin': 0,
+            'font': '@font',
+            'outline': '0',  # removes dotted line around clicked item
+            '::item': {
+                'border-width': '@bw',
+                'border-style': 'solid',
+                'border-color': '@bg',
             },
-        },
-        'text_contrast': {
-            'font': {  # self.theme['text_contrast']['font_object']
-                'size': 10,
-                'weight': 'italic',
+            '::item:selected': {
+                'background-color': '@bg',
+                'border-width': '@bw',
+                'border-style': 'solid',
+                'border-color': '@bg',
             },
-        },
-        'text_medium': {
-            'font': {  # self.theme['text_medium']['font_object']
-                'size': 9,
+            # selected but not the last click of the user
+            '::item:selected:!active': {
+                'color': '@fg'
             },
-        },
-        'text_small': {
-            'font': {  # self.theme['text_small']['font_object']
-                'size': 8,
+            '::item:hover': {
+                'background-color': '@lbg',
             },
+            '~QScrollBar': {
+                'border-style': 'none',
+                'border': 'none',
+                'border-radius': 0
+            }
         },
-        'text_tiny': {
-            'font': {  # self.theme['text_tiny']['font_object']
-                'size': 8,
-                'weight': 'bold',
-            },
+        # large text editor
+        'textedit': {
+            'background-color': '@mbg',
+            'border-style': 'solid',
+            'border-width': '@bw',
+            'border-color': '@bc',
+            'font': '@font',
+            'color': '@fg',
+            'padding': 3,
+            'selection-background-color': '@lsets'
         },
-        'text_log': {
-            'font': {  # self.theme['text_small']['font_object']
-                'family': 'Courier',
-                'size': 10,
-            },
-        },
-        'entry': {  # Entry and Text widgets
-            'bg': '#b3b3b3',  # self.theme['entry']['bg']
-            'fg': '#3a3a3a',  # self.theme['entry']['fg']
-        },
-        'entry_dark': {
-            'bg': '#3a3a3a',  # self.theme['entry_dark']['bg']
-            'fg': '#ffffff',  # self.theme['entry_dark']['fg']
-        },
-        'tooltip': {
-            'bg': '#090b0d',  # self.theme['tooltip']['bg']
-            'fg': '#ffffff',  # self.theme['tooltip']['fg']
-            'highlight': '#090b0d',  # self.theme['tooltip']['highlight']
-            'relief': 'flat',  # self.theme['tooltip']['relief']
-            # Tags
-            'head1': {'fg': '#42afca'},  # self.theme['tooltip']['head1']['fg']
-            'head': {'fg': '#42afca'},  # self.theme['tooltip']['head']['fg']
-            'subhead': {'fg':  '#f4f400'},  # self.theme['tooltip']['subhead']['fg']
-            'who': {'fg':  '#ff6347'},  # self.theme['tooltip']['who']['fg']
-            'distance': {'fg':  '#000000'},  # self.theme['tooltip']['distance']['fg']
-        },
-        'tooltip_head': {
-            'font': {  # self.theme['tooltip_head']['font_object']
-                'size': 12,
-                'weight': 'bold',
-            },
-        },
-        'tooltip_subhead': {
-            'font': {  # self.theme['tooltip_subhead']['font_object']
-                'size': 10,
-                'weight': 'bold',
-            },
-        },
-        'tooltip_name': {
-            'font': {  # self.theme['tooltip_name']['font_object']
-                'size': 15,
-                'weight': 'bold',
-            },
-        },
-        'tooltip_body': {
-            'font': {  # self.theme['tooltip_body']['font_object']
-                'size': 10,
-            },
-        },
-        'tooltip_distance': {
-            'font': {  # self.theme['tooltip_distance']['font_object']
-                'size': 4,
-            },
-        },
-        'icon_off': {
-            'bg': 'grey',  # self.theme['icon_off']['bg']
-            'fg': '#ffffff',  # self.theme['icon_off']['fg']
-            'hlbg': 'grey',  # self.theme['icon_off']['hlbg']  # highlightbackground
-            'hlthick': 0,  # self.theme['icon_off']['hlthick']  # highlightthickness
-            'relief': 'raised',  # self.theme['icon_off']['relief']
-        },
-        'icon_on': {
-            'bg': 'yellow',  # self.theme['icon_on']['bg']
-            'fg': '#ffffff',  # self.theme['icon_on']['fg']
-            'relief': 'raised',  # self.theme['icon_on']['relief']
-        },
+        # context menu
         'context_menu': {
-            'activebackground': '#dddddd',
-            'activeforeground': '#000000'
-        }
+            'background-color': '@bg',
+            'border-color': '@lbg',
+            'border-width': '@bw',
+            'border-style': 'solid',
+            'border-radius': '@br',
+            'padding': '@sep',
+            '::item': {
+                'color': '@fg',
+                'font': '@font',
+                'border-color': '@bg',
+                'border-radius': 0,
+                'border-style': 'solid',
+                'border-width': '@bw',
+                'padding': (3, 3, 1, 10),
+            },
+            '::icon': {
+                'padding': (1, 1, 1, 10),
+            },
+            '::item:selected': {
+                'border-color': '@sets',
+            },
+            '::item:disabled': {
+                'color': '@mfg'
+            },
+            '::item:disabled:selected': {
+                'border-color': '@bg'
+            }
+        },
+        # frame for duty officers
+        'doff_frame': {
+            'background-color': '@bg',
+            'border-style': 'solid',
+            'border-width': '@bw',
+            'border-color': '@bc',
+            'padding': 2
+        },
+        # segment of the bonus bar
+        'bonus_bar': {
+            ':disabled': {
+                'border-style': 'solid',
+                'border-top-style': 'none',
+                'border-bottom-style': 'none',
+                'border-width': '@bw',
+                'border-color': '@bc',
+                'background-color': '@bg',
+            },
+            ':checked': {
+                'background-color': '@sets'
+            }
+        },
+        # label holding career / ground icon
+        'unlock_label': {
+            'border-style': 'none',
+            'border-top-style': 'solid',
+            'border-top-width': 1,
+            'border-top-color': '@bc',
+            'margin': (0, 0, 3, 0),
+            'padding': (3, 10, 0, 10)
+        },
+        # horizontal seperator
+        'hr': {
+            'background-color': '@lbg',
+            'border-style': 'none',
+            'height': 1
+        },
+        # horizontal sliding selector
+        'slider': {
+            'font': ('Roboto Mono', 11, 'Normal'),
+            'color': '@fg',
+            '::groove:horizontal': {
+                'border-style': 'none',
+                'background-color': '@lbg',
+                'border-radius': '@bw',
+                'height': 3
+            },
+            '::handle:horizontal': {
+                'border-style': 'solid',
+                'border-width': '@bw',
+                'border-color': '@bc',
+                'background-color': '@bc',
+                'width': 6,
+                'margin-top': -7,
+                'margin-bottom': -7
+            },
+            '::handle:horizontal:hover': {
+                'border-color': '@sets'
+            },
+            '::handle:horizontal:pressed': {
+                'background-color': '#666666'
+            },
+        },
+        # small window
+        'dialog_window': {
+            'background-color': '@sets'
+        },
     }
 
-    def encodeBuildInImage(self, src, message, dest):
-        img = Image.open(src, 'r')
-        width, height = img.size
-        array = np.array(list(img.getdata()))
-        if img.mode == 'RGB':
-            n = 3
-        elif img.mode == 'RGBA':
-            n = 4
+    @staticmethod
+    def base_path() -> str:
+        """initialize the base path"""
+        if getattr(sys, 'frozen', False):
+            base_path = os.path.dirname(sys.executable)
         else:
+<<<<<<< HEAD
             return
         total_pixels = array.size//n
         message += "$t3g0"
@@ -1953,130 +2289,55 @@ class SETS():
                 'library' : 'library',
                 'backups' : 'backups',
                 'logs': 'logs',
+=======
+            base_path = os.path.abspath(os.path.dirname(__file__))
+        return base_path
+
+    @staticmethod
+    def app_config() -> dict:
+        config = {
+            'settings_path': '.SETS_settings.ini',
+            'config_folder_path': '.config',
+            'config_subfolders': {
+                'library': 'library',
+                'cache': 'cache',
+                'cargo': 'cargo',
+                'images': 'images',
+                'ship_images': 'ship_images',
+                'backups': 'backups',
+                'auto_backups': 'auto_backups'
+>>>>>>> upstream/main
             },
-            'tags': {
-                'curated': 0,
-                'maindamage': {
-                    'energy': 0, 'kinetic': 0, 'exotic': 0, 'drain': 0
-                },
-                'energytype': {
-                    'phaser': 0, 'disruptor': 0, 'plasma': 0, 'polaron': 0, 'Tetryon': 0, 'antiproton': 0
-                },
-                'weapontype': {
-                    'cannon': 0, 'beam': 0, 'mine': 0, 'torpedo': 0, 'sia': 0, 'dsd': 0, 'console-spam': 0
-                },
-                'state': 0,
-                'role': {
-                    'dps': 0, 'heavytank': 0, 'debufftank': 0, 'nanny': 0, 'off-meta': 0, 'theme': 0
-                },
-                'PvP':0,
-                'pvprole': {
-                    'dogfighter': 0, 'cruiser-carrier': 0, 'science-spam': 0, 'healer': 0
-                },
-                'budget': {
-                    'no promo / lockbox ships': 0, 'no lobi ships': 0, 'no lobi gear': 0, 'no c-store ships': 0
-                }
+            'autosave_filename': '.autosave.json',
+            'box_width': 49,
+            'box_height': 64,
+            'link_website': 'https://stobuilds.com/apps/sets',
+            'link_github': 'https://github.com/STOCD',
+            'link_discord': 'https://discord.gg/kxwHxbsqzF',
+            'link_downloads': 'https://github.com/STOCD/SETS/releases',
+            'default_settings': {
+                'ui_scale': 1.0,
+                'default_mark': '',
+                'default_rarity': 'Common',
+                'picker_relative': 0,
+                'default_save_format': 'JSON',
+                'geometry': None,
+                'pref_backup': 0
             }
         }
+        return config
 
-    def resetBuild(self, type=None):
-        """Initialize new build state"""
-        # VersionJSON Should be updated when JSON format changes, currently number-as-date-with-hour in UTC
-        self.versionJSONminimum = 0
-        self.versionJSON = 2022022811
-        self.clearing = False
-        if type == 'keepSkills':
-            currentSkilltree = {'skilltree':self.build['skilltree']}
-        if type == 'clearShip':
-            self.build.update({
-            'versionJSON': self.versionJSON,
-            'boffs': dict(),
-            'boffseats': dict(),
-            'activeRepTrait': [None] * 5,
-            'spaceRepTrait': [None] * 5,
-            'personalSpaceTrait': [None] * 6,
-            'personalSpaceTrait2': [None] * 6,
-            'starshipTrait': [None] * 6,
-            'uniConsoles': [None] * 5,
-            'tacConsoles': [None] * 5,
-            'sciConsoles': [None] * 5,
-            'engConsoles': [None] * 5,
-            'devices': [None] * 5,
-            'aftWeapons': [None] * 5,
-            'foreWeapons': [None] * 5,
-            'hangars': [None] * 2,
-            'deflector': [None],
-            'engines': [None],
-            'warpCore': [None],
-            'shield': [None],
-            'ship': '',
-            'playerShipName': '',
-            'playerShipDesc': '',
-            'tier': '',
-            'secdef': [None],
-            'experimental': [None],
-            'tags': dict(),
-            })
-            self.build['doffs']['space']=[None]*6
-            return
+    @staticmethod
+    def launch():
+        args = {}
+        exit_code = SETS(
+                theme=Launcher.theme, args=args,
+                path=Launcher.base_path(), config=Launcher.app_config(),
+                versions=(Launcher.__version__, Launcher.version)).run()
+        sys.exit(exit_code)
 
-        self.build = {
-            'versionJSON': self.versionJSON,
-            'boffs': dict(),
-            'boffseats': dict(),
-            'activeRepTrait': [None] * 5,
-            'spaceRepTrait': [None] * 5,
-            'personalSpaceTrait': [None] * 6,
-            'personalSpaceTrait2': [None] * 6,
-            'starshipTrait': [None] * 6,
-            'uniConsoles': [None] * 5,
-            'tacConsoles': [None] * 5,
-            'sciConsoles': [None] * 5,
-            'engConsoles': [None] * 5,
-            'devices': [None] * 5,
-            'aftWeapons': [None] * 5,
-            'foreWeapons': [None] * 5,
-            'hangars': [None] * 2,
-            'deflector': [None],
-            'engines': [None],
-            'warpCore': [None],
-            'shield': [None],
-            'captain': {'faction' : '' },
-            'career': '',
-            'species': '',
-            'ship': '',
-            'specPrimary': '',
-            'playerHandle': '',
-            'playerShipName': '',
-            'playerShipDesc': '',
-            'playerName': '',
-            'playerDesc': '',
-            'specSecondary': '',
-            'tier': '',
-            'secdef': [None],
-            'experimental': [None],
-            'personalGroundTrait': [None] * 6,
-            'personalGroundTrait2': [None] * 6,
-            'groundActiveRepTrait': [None] * 5,
-            'groundRepTrait': [None] * 5,
-            'groundKitModules': [None] * 6,
-            'groundKit': [None],
-            'groundArmor': [None],
-            'groundEV': [None],
-            'groundShield': [None],
-            'groundWeapons': [None] * 2,
-            'groundDevices': [None] * 5,
-            'eliteCaptain': False,
-            'doffs': {'space': [None] * 6 , 'ground': [None] * 6},
-            'tags': dict(),
-        }
-        # self.reset_build_part(environment='space', init=True)  # Disabled until environment slices are refactored
-        # self.reset_build_part(environment='ground', init=True)  # Disabled until environment slices are refactored
-        if type == 'keepSkills':
-            self.build.update(currentSkilltree)
-        else:
-            self.reset_build_skill(init=True)
 
+<<<<<<< HEAD
 
 
     def reset_build_part(self, environment='space', init=False):
@@ -8727,3 +8988,7 @@ class SETS():
 
 
 SETS().run()
+=======
+if __name__ == '__main__':
+    Launcher.launch()
+>>>>>>> upstream/main
